@@ -11,10 +11,17 @@ find_package(glfw3 REQUIRED)
 find_package(GLEW 2.0 REQUIRED)
 
 # GLM
-find_package(GLM REQUIRED)
+find_package(glm REQUIRED)
 
 # Add executable
-add_executable(OpenGL_OBJ_Loader main.cpp)
+add_executable(OpenGL_OBJ_Loader 
+    main.cpp
+    common/shader.cpp
+	common/shader.hpp
+
+	SimpleFragmentShader.fragmentshader
+	SimpleVertexShader.vertexshader
+)
 
 # Add include directories
 target_include_directories(OpenGL_OBJ_Loader

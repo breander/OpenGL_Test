@@ -9,6 +9,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "common/shader.hpp"
+
 struct Vertex {
     float x, y, z;
 };
@@ -119,7 +121,7 @@ int main() {
     }
 
     // Load OBJ file
-    ObjLoader objLoader("../cube.obj");
+    ObjLoader objLoader("../teapot.obj");
 
     // Create Vertex Array Object (VAO)
     GLuint vao;
@@ -147,10 +149,13 @@ int main() {
     glEnable(GL_DEPTH_TEST);
 
     // Camera parameters
-    glm::vec3 cameraPosition = glm::vec3(0.0f, 0.0f, 3.0f);
+    glm::vec3 cameraPosition = glm::vec3(0.0f, 0.0f, 6.0f);
     glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
     glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
     float cameraSpeed = 0.05f;
+
+    // Create and compile our GLSL program from the shaders
+	GLuint programID = LoadShaders( "../SimpleVertexShader.vertexshader", "../SimpleFragmentShader.fragmentshader" );
 
     // Projection matrix
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
@@ -164,7 +169,7 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Use the shader program
-        glUseProgram(0);
+        glUseProgram(programID);
 
         // Bind the VAO
         glBindVertexArray(vao);
@@ -191,7 +196,6 @@ int main() {
 
         // Update view matrix
         view = glm::lookAt(cameraPosition, cameraPosition + cameraFront, cameraUp);
-
 
         // Set the transformation matrix
         GLint modelLoc = glGetUniformLocation(0, "model");
