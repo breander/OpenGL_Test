@@ -198,8 +198,14 @@ int main() {
         view = glm::lookAt(cameraPosition, cameraPosition + cameraFront, cameraUp);
 
         // Set the transformation matrix
-        GLint modelLoc = glGetUniformLocation(0, "model");
-        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, nullptr);
+        //GLint modelLoc = glGetUniformLocation(0, "model");
+        //glUniformMatrix4fv(modelLoc, 1, GL_FALSE, nullptr);
+         // Set the view and projection matrices as uniforms in your shader program
+        GLint viewLoc = glGetUniformLocation(programID, "view");
+        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+
+        GLint projectionLoc = glGetUniformLocation(programID, "projection");
+        glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
         // Draw the object
         glDrawElements(GL_TRIANGLES, objLoader.getFaces().size() * 3, GL_UNSIGNED_INT, 0);
