@@ -8,11 +8,13 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/transform.hpp>
 
 #include "common/shader.hpp"
 
 struct Vertex {
     float x, y, z;
+    float nX, nY, nZ;
 };
 
 struct Face {
@@ -53,6 +55,9 @@ private:
             if (type == "v") {
                 Vertex vertex;
                 iss >> vertex.x >> vertex.y >> vertex.z;
+                vertex.nX = 1.0f;
+                vertex.nY = -1.0f;
+                vertex.nZ = 0.0f;
                 vertices.push_back(vertex);
             } else if (type == "f") {
                 Face face;
@@ -138,6 +143,10 @@ int main() {
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
     glEnableVertexAttribArray(0);
 
+    // Specify the layout of the normal data
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
     // Unbind VAO, VBO, and EBO
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
@@ -154,14 +163,26 @@ int main() {
     glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
     float cameraSpeed = 0.05f;
 
+    glm::vec3 modelPosition = glm::vec3(0.0f, 0.0f, 0.0f);
+
     // Create and compile our GLSL program from the shaders
 	GLuint programID = LoadShaders( "../SimpleVertexShader.vertexshader", "../SimpleFragmentShader.fragmentshader" );
 
     // Projection matrix
-    glm::mat4 projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+    glm::mat4 projection = glm::perspective(glm::radians(60.0f), 800.0f / 600.0f, 0.1f, 100.0f);
 
     // View matrix
     glm::mat4 view = glm::lookAt(cameraPosition, cameraPosition + cameraFront, cameraUp);
+
+    // Set light properties as uniforms
+    //glUniform3f(glGetUniformLocation(programID, "light.position"), 1.0f, 1.0f, 2.0f);
+    glm::vec3 light_position = glm::vec3(1.0f, 1.0f, 2.0f);
+    //glUniform3f(glGetUniformLocation(programID, "light.color"), 1.0f, 1.0f, 1.0f);
+    glm::vec3 light_color = glm::vec3(1.0f, 1.0f, 1.0f);
+
+    // Set object color as uniform
+    //glUniform3f(glGetUniformLocation(programID, "objectColor"), 1.0f, 0.5f, 0.31f);
+    glm::vec3 objectColor = glm::vec3(1.0f, 0.5f, 0.0f);
 
     // Render loop
     while (!glfwWindowShouldClose(window)) {
@@ -193,19 +214,42 @@ int main() {
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
             cameraPosition += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
         }
+        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS){
+            cameraPosition += cameraUp * cameraSpeed;
+        }
+        if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
+            cameraPosition -= cameraUp * cameraSpeed;
+        }
+        if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS){
+            cameraFront -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+        }
+        if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS){
+            cameraFront += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+        }
 
         // Update view matrix
         view = glm::lookAt(cameraPosition, cameraPosition + cameraFront, cameraUp);
 
+        glm::vec3 myRotationAxis( 0.0f, 1.0f, 0.0f);
+        glm::mat4 rotationMatrix = glm::rotate( angle, myRotationAxis );
+
         // Set the transformation matrix
-        //GLint modelLoc = glGetUniformLocation(0, "model");
-        //glUniformMatrix4fv(modelLoc, 1, GL_FALSE, nullptr);
+        GLint modelLoc = glGetUniformLocation(programID, "model");
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(rotationMatrix));
+
          // Set the view and projection matrices as uniforms in your shader program
         GLint viewLoc = glGetUniformLocation(programID, "view");
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 
         GLint projectionLoc = glGetUniformLocation(programID, "projection");
         glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+
+        // Set light properties as uniforms
+        glUniform3fv(glGetUniformLocation(programID, "light.position"), 1, glm::value_ptr(light_position));
+        glUniform3fv(glGetUniformLocation(programID, "light.color"), 1, glm::value_ptr(light_color));
+
+        // Set object color as uniform
+        glUniform3fv(glGetUniformLocation(programID, "objectColor"), 1, glm::value_ptr(objectColor));
 
         // Draw the object
         glDrawElements(GL_TRIANGLES, objLoader.getFaces().size() * 3, GL_UNSIGNED_INT, 0);
