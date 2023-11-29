@@ -12,6 +12,9 @@
 
 #include "common/shader.hpp"
 
+const int Width = 1920;
+const int Height = 1080;
+
 struct Vertex {
     float x, y, z;
     float nX, nY, nZ;
@@ -109,7 +112,7 @@ int main() {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     // Create a windowed mode window and its OpenGL context
-    GLFWwindow* window = glfwCreateWindow(800, 600, "OpenGL OBJ Loader", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(Width, Height, "OpenGL OBJ Loader", NULL, NULL);
     if (!window) {
         std::cerr << "Error creating GLFW window" << std::endl;
         glfwTerminate();
@@ -196,7 +199,7 @@ int main() {
         glBindVertexArray(vao);
 
         // Rotate the object
-        angle += 0.01f;
+        angle += 0.001f;
         if (angle > 360.0f) {
             angle -= 360.0f;
         }
