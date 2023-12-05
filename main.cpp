@@ -200,7 +200,7 @@ int main() {
 	GLuint programID = LoadShaders( "../SimpleVertexShader.vertexshader", "../SimpleFragmentShader.fragmentshader" );
 
     // Projection matrix
-    glm::mat4 projection = glm::perspective(glm::radians(60.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+    glm::mat4 projection = glm::perspective(glm::radians(60.0f), (float)Width / (float)Height, 0.1f, 100.0f);
 
     // View matrix
     glm::mat4 view = glm::lookAt(cameraPosition, cameraPosition + cameraFront, cameraUp);
