@@ -224,7 +224,7 @@ int main() {
         glBindVertexArray(vao);
 
         // Rotate the object
-        //angle += 0.001f;
+        angle += 0.001f;
         if (angle > 360.0f) {
             angle -= 360.0f;
         }
@@ -266,6 +266,12 @@ int main() {
         }
         if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS){
             light_position.z += cameraSpeed;
+        }
+        if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS){
+            light_position.y -= cameraSpeed;
+        }
+        if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS){
+            light_position.y += cameraSpeed;
         }
 
         // Update view matrix
