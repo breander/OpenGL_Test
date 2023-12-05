@@ -12,14 +12,12 @@ uniform mat4 projection;
 uniform mat4 model;
 
 void main(){
-    // Transform vertex position and normal to world coordinates
-    vec4 worldPos = model * vec4(vertexPosition_modelspace, 1.0);
-    FragPos = vec3(worldPos);
+
+    // Transform vertex position to world coordinates
+    FragPos = mat3(transpose(inverse(model))) * vertexPosition_modelspace;
 
     // Transform normal to world coordinates (no translation)
-    worldPos = model * vec4(aNormal, 1.0);
-    //Normal = mat3(transpose(inverse(model))) * aNormal;
-    Normal = vec3(worldPos);
+    Normal = mat3(transpose(inverse(model))) * aNormal;
     
     gl_Position = projection * view * model * vec4(vertexPosition_modelspace, 1.0);
 }

@@ -211,6 +211,7 @@ int main() {
 
     // Set object color as uniform
     glm::vec3 objectColor = glm::vec3(1.0f, 0.5f, 0.0f);
+    glm::float32 intensity = 0.5f;
 
     // Render loop
     while (!glfwWindowShouldClose(window)) {
@@ -224,7 +225,7 @@ int main() {
         glBindVertexArray(vao);
 
         // Rotate the object
-        angle += 0.001f;
+        angle += 0.01f;
         if (angle > 360.0f) {
             angle -= 360.0f;
         }
@@ -274,6 +275,13 @@ int main() {
             light_position.y += cameraSpeed;
         }
 
+        if (glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS){
+            intensity -= cameraSpeed;
+        }
+        if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS){
+            intensity += cameraSpeed;
+        }
+
         // Update view matrix
         view = glm::lookAt(cameraPosition, cameraPosition + cameraFront, cameraUp);
 
@@ -297,6 +305,7 @@ int main() {
 
         // Set object color as uniform
         glUniform3fv(glGetUniformLocation(programID, "objectColor"), 1, glm::value_ptr(objectColor));
+        glUniform1f(glGetUniformLocation(programID, "intensity"), intensity);
 
         // Draw the object
         glDrawElements(GL_TRIANGLES, objLoader.getFaces().size() * 3, GL_UNSIGNED_INT, 0);
