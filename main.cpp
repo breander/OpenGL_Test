@@ -12,12 +12,16 @@
 
 #include "common/shader.hpp"
 
-const int Width = 1920;
-const int Height = 1080;
+const int Width = 640;
+const int Height = 480;
 
 struct Vertex {
     float x, y, z;
     float nX, nY, nZ;
+};
+
+struct Normal{
+    float x, y, z;
 };
 
 struct Face {
@@ -34,12 +38,17 @@ public:
         return vertices;
     }
 
+    const std::vector<Normal>& getVertexNormals() const{
+        return normals;
+    }
+
     const std::vector<Face>& getFaces() const {
         return faces;
     }
 
 private:
     std::vector<Vertex> vertices;
+    std::vector<Normal> normals;
     std::vector<Face> faces;
 
     void loadObj(const std::string& filePath) {
@@ -53,19 +62,38 @@ private:
         while (std::getline(file, line)) {
             std::istringstream iss(line);
             std::string type;
+            char junk;
             iss >> type;
 
             if (type == "v") {
                 Vertex vertex;
                 iss >> vertex.x >> vertex.y >> vertex.z;
-                vertex.nX = 1.0f;
-                vertex.nY = -1.0f;
-                vertex.nZ = 0.0f;
                 vertices.push_back(vertex);
-            } else if (type == "f") {
+            }
+            else if (type == "vn"){
+                Normal normal;
+                iss >> normal.x >> normal.y >> normal.z;
+                normals.push_back(normal);
+            }
+            else if (type == "f") {
                 Face face;
-                iss >> face.v1 >> face.v2 >> face.v3;
+                int n1, n2, n3;
+
+                iss >> face.v1 >> junk >> junk >> n1 >> face.v2 >> junk >> junk >> n2 >> face.v3 >> junk >> junk >> n3;
+                
                 // OBJ file indices start from 1, but OpenGL indices start from 0
+                vertices[face.v1-1].nX = normals[n1-1].x;
+                vertices[face.v1-1].nY = normals[n1-1].y;
+                vertices[face.v1-1].nZ = normals[n1-1].z;
+
+                vertices[face.v2-1].nX = normals[n2-1].x;
+                vertices[face.v2-1].nY = normals[n2-1].y;
+                vertices[face.v2-1].nZ = normals[n2-1].z;
+
+                vertices[face.v3-1].nX = normals[n3-1].x;
+                vertices[face.v3-1].nY = normals[n3-1].y;
+                vertices[face.v3-1].nZ = normals[n3-1].z;
+
                 face.v1--; face.v2--; face.v3--;
                 faces.push_back(face);
             }
@@ -178,13 +206,10 @@ int main() {
     glm::mat4 view = glm::lookAt(cameraPosition, cameraPosition + cameraFront, cameraUp);
 
     // Set light properties as uniforms
-    //glUniform3f(glGetUniformLocation(programID, "light.position"), 1.0f, 1.0f, 2.0f);
-    glm::vec3 light_position = glm::vec3(1.0f, 1.0f, 2.0f);
-    //glUniform3f(glGetUniformLocation(programID, "light.color"), 1.0f, 1.0f, 1.0f);
+    glm::vec3 light_position = glm::vec3(0.0f, 3.0f, 2.0f);
     glm::vec3 light_color = glm::vec3(1.0f, 1.0f, 1.0f);
 
     // Set object color as uniform
-    //glUniform3f(glGetUniformLocation(programID, "objectColor"), 1.0f, 0.5f, 0.31f);
     glm::vec3 objectColor = glm::vec3(1.0f, 0.5f, 0.0f);
 
     // Render loop
@@ -199,7 +224,7 @@ int main() {
         glBindVertexArray(vao);
 
         // Rotate the object
-        angle += 0.001f;
+        //angle += 0.001f;
         if (angle > 360.0f) {
             angle -= 360.0f;
         }
@@ -228,6 +253,19 @@ int main() {
         }
         if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS){
             cameraFront += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+        }
+
+        if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS){
+            light_position.x -= cameraSpeed;
+        }
+        if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS){
+            light_position.x += cameraSpeed;
+        }
+        if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS){
+            light_position.z -= cameraSpeed;
+        }
+        if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS){
+            light_position.z += cameraSpeed;
         }
 
         // Update view matrix

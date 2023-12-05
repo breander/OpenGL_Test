@@ -17,7 +17,9 @@ void main(){
     FragPos = vec3(worldPos);
 
     // Transform normal to world coordinates (no translation)
-    Normal = mat3(transpose(inverse(model))) * aNormal;
+    worldPos = model * vec4(aNormal, 1.0);
+    //Normal = mat3(transpose(inverse(model))) * aNormal;
+    Normal = vec3(worldPos);
     
     gl_Position = projection * view * model * vec4(vertexPosition_modelspace, 1.0);
 }
