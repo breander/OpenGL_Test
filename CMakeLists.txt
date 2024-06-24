@@ -16,6 +16,14 @@ find_package(glm REQUIRED)
 # Add executable
 add_executable(OpenGL_OBJ_Loader 
     main.cpp
+    
+    common/objloader.cpp
+    common/objloader.hpp
+    
+    common/face.hpp
+    common/normal.hpp
+    common/vertex.hpp
+    
     common/shader.cpp
 	common/shader.hpp
 
