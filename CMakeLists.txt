@@ -23,6 +23,9 @@ add_executable(OpenGL_Test
     common/face.hpp
     common/normal.hpp
     common/vertex.hpp
+
+    common/camera.cpp
+    common/camera.hpp
     
     common/shader.cpp
 	common/shader.hpp

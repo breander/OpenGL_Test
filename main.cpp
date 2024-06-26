@@ -15,6 +15,7 @@
 #include "common/face.hpp"
 #include "common/objloader.hpp"
 #include "common/shader.hpp"
+#include "common/camera.hpp"
 
 const int Width = 640;
 const int Height = 480;
@@ -119,10 +120,7 @@ int main() {
     glEnable(GL_DEPTH_TEST);
 
     // Camera parameters
-    glm::vec3 cameraPosition = glm::vec3(0.0f, 0.0f, 6.0f);
-    glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-    glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-    float cameraSpeed = 0.05f;
+    Camera camera = Camera();
 
     glm::vec3 modelPosition = glm::vec3(0.0f, 0.0f, 0.0f);
 
@@ -133,7 +131,7 @@ int main() {
     glm::mat4 projection = glm::perspective(glm::radians(60.0f), (float)Width / (float)Height, 0.1f, 100.0f);
 
     // View matrix
-    glm::mat4 view = glm::lookAt(cameraPosition, cameraPosition + cameraFront, cameraUp);
+    glm::mat4 view = camera.getLookAt();
 
     // Set light properties as uniforms
     glm::vec3 light_position = glm::vec3(0.0f, 3.0f, 2.0f);
@@ -162,58 +160,58 @@ int main() {
 
         // Process input
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-            cameraPosition += cameraSpeed * cameraFront;
+            camera.moveForward();
         }
         if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-            cameraPosition -= cameraSpeed * cameraFront;
+            camera.moveBackward();
         }
         if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-            cameraPosition -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+            camera.moveLeft();
         }
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-            cameraPosition += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+            camera.moveRight();
         }
         if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS){
-            cameraPosition += cameraUp * cameraSpeed;
+            camera.moveUp();
         }
         if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
-            cameraPosition -= cameraUp * cameraSpeed;
+            camera.moveDown();
         }
         if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS){
-            cameraFront -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+            camera.rotateLeft();
         }
         if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS){
-            cameraFront += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+            camera.rotateRight();
         }
 
         if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS){
-            light_position.x -= cameraSpeed;
+            light_position.x -= camera.getSpeed();
         }
         if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS){
-            light_position.x += cameraSpeed;
+            light_position.x += camera.getSpeed();
         }
         if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS){
-            light_position.z -= cameraSpeed;
+            light_position.z -= camera.getSpeed();
         }
         if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS){
-            light_position.z += cameraSpeed;
+            light_position.z += camera.getSpeed();
         }
         if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS){
-            light_position.y -= cameraSpeed;
+            light_position.y -= camera.getSpeed();
         }
         if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS){
-            light_position.y += cameraSpeed;
+            light_position.y += camera.getSpeed();
         }
 
         if (glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS){
-            intensity -= cameraSpeed;
+            intensity -= camera.getSpeed();
         }
         if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS){
-            intensity += cameraSpeed;
+            intensity += camera.getSpeed();
         }
 
         // Update view matrix
-        view = glm::lookAt(cameraPosition, cameraPosition + cameraFront, cameraUp);
+        view = camera.getLookAt();
 
         glm::vec3 myRotationAxis( 0.0f, 1.0f, 0.0f);
         glm::mat4 rotationMatrix = glm::rotate( angle, myRotationAxis );
