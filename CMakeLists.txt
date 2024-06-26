@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(OpenGL_OBJ_Loader)
+project(OpenGL_Test)
 
 # Set C++ standard to C++11
 set(CMAKE_CXX_STANDARD 11)
@@ -14,7 +14,7 @@ find_package(GLEW 2.0 REQUIRED)
 find_package(glm REQUIRED)
 
 # Add executable
-add_executable(OpenGL_OBJ_Loader 
+add_executable(OpenGL_Test 
     main.cpp
     
     common/objloader.cpp
@@ -32,18 +32,18 @@ add_executable(OpenGL_OBJ_Loader
 )
 
 # Add include directories
-target_include_directories(OpenGL_OBJ_Loader
+target_include_directories(OpenGL_Test
     PRIVATE ${OPENGL_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS} ${GLM_INCLUDE_DIRS}
 )
 
 # Link libraries
-target_link_libraries(OpenGL_OBJ_Loader
+target_link_libraries(OpenGL_Test
     PRIVATE ${OPENGL_LIBRARIES} glfw ${GLEW_LIBRARIES} ${GLM_LIBRARIES}
 )
 
 # Set the macOS RPATH to use the @executable_path
 if(APPLE)
-    set_target_properties(OpenGL_OBJ_Loader PROPERTIES
+    set_target_properties(OpenGL_Test PROPERTIES
         BUILD_WITH_INSTALL_RPATH TRUE
         INSTALL_RPATH "@executable_path"
     )

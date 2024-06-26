@@ -39,11 +39,12 @@ void errorCallback(int error, const char* description) {
     std::cerr << "Error: " << description << std::endl;
 }
 
-int main() {
+GLFWwindow* initialize(){
     // Initialize GLFW
     if (!glfwInit()) {
         std::cerr << "Error initializing GLFW" << std::endl;
-        return -1;
+        return nullptr;
+        //return -1;
     }
 
     // Set GLFW to throw errors
@@ -56,11 +57,12 @@ int main() {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     // Create a windowed mode window and its OpenGL context
-    GLFWwindow* window = glfwCreateWindow(Width, Height, "OpenGL OBJ Loader", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(Width, Height, "OpenGL_Test", NULL, NULL);
     if (!window) {
         std::cerr << "Error creating GLFW window" << std::endl;
         glfwTerminate();
-        return -1;
+        return nullptr;
+        //return -1;
     }
 
     // Make the window's context current
@@ -69,6 +71,18 @@ int main() {
     // Initialize GLEW
     if (glewInit() != GLEW_OK) {
         std::cerr << "Error initializing GLEW" << std::endl;
+        return nullptr;
+        //return -1;
+    }
+
+    return window;
+}
+
+int main() {
+    // Initialize window
+    GLFWwindow* window = initialize();
+
+    if(!window){
         return -1;
     }
 
