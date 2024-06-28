@@ -115,6 +115,7 @@ int main() {
 
     // Set up rotation angle
     float angle = 0.0f;
+    float movement = 0.0f;
 
     // Enable depth testing
     glEnable(GL_DEPTH_TEST);
@@ -122,10 +123,10 @@ int main() {
     // Camera parameters
     Camera camera = Camera();
 
-    glm::vec3 modelPosition = glm::vec3(0.0f, 0.0f, 0.0f);
+    //glm::vec3 modelPosition = glm::vec3(0.0f, 0.0f, 0.0f);
 
     // Create and compile our GLSL program from the shaders
-	GLuint programID = LoadShaders( "../SimpleVertexShader.vertexshader", "../SimpleFragmentShader.fragmentshader" );
+	GLuint programID = LoadShaders( "../SimpleVertexShader.glsl", "../SimpleFragmentShader.glsl" );
 
     // Projection matrix
     glm::mat4 projection = glm::perspective(glm::radians(60.0f), (float)Width / (float)Height, 0.1f, 100.0f);
@@ -139,7 +140,7 @@ int main() {
 
     // Set object color as uniform
     glm::vec3 objectColor = glm::vec3(1.0f, 0.5f, 0.0f);
-    glm::float32 intensity = 0.5f;
+    glm::float32 intensity = 1.5f;
 
     // Render loop
     while (!glfwWindowShouldClose(window)) {
@@ -153,10 +154,12 @@ int main() {
         glBindVertexArray(vao);
 
         // Rotate the object
-        angle += 0.01f;
+        angle += 0.001f;
         if (angle > 360.0f) {
             angle -= 360.0f;
         }
+
+        movement -= 0.001f;
 
         // Process input
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
@@ -215,12 +218,16 @@ int main() {
 
         glm::vec3 myRotationAxis( 0.0f, 1.0f, 0.0f);
         glm::mat4 rotationMatrix = glm::rotate( angle, myRotationAxis );
+        glm::vec3 translation(0.0f, -1.0f, -1.0f + movement);
+        glm::mat4 translationMatrix = glm::translate(translation);
+        glm::vec3 scale(2.0f, 2.0f, 2.0f);
+        glm::mat4 scaleMatrix = glm::scale(scale);
 
         // Set the transformation matrix
         GLint modelLoc = glGetUniformLocation(programID, "model");
-        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(rotationMatrix));
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(translationMatrix * rotationMatrix * scaleMatrix));
 
-         // Set the view and projection matrices as uniforms in your shader program
+        // Set the view and projection matrices as uniforms in your shader program
         GLint viewLoc = glGetUniformLocation(programID, "view");
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 

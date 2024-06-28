@@ -7,7 +7,7 @@ Camera::Camera(){
     _position = glm::vec3(0.0f, 0.0f, 6.0f);
     _up = glm::vec3(0.0f, 1.0f, 0.0f);
     _front = glm::vec3(0.0f, 0.0f, -1.0f);
-    _speed = 0.05f;
+    _speed = 0.005f;
 }
 
 Camera::Camera(glm::vec3 position, glm::vec3 up, glm::vec3 front, float speed){

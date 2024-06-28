@@ -30,8 +30,8 @@ add_executable(OpenGL_Test
     common/shader.cpp
 	common/shader.hpp
 
-	SimpleFragmentShader.fragmentshader
-	SimpleVertexShader.vertexshader
+	SimpleFragmentShader.glsl
+	SimpleVertexShader.glsl
 )
 
 # Add include directories
