@@ -19,6 +19,9 @@ add_executable(OpenGL_Test
     
     common/objloader.cpp
     common/objloader.hpp
+
+    common/lvlloader.cpp
+    common/lvlloader.hpp
     
     common/face.hpp
     common/normal.hpp

@@ -1,0 +1,13 @@
+{
+  "Name": "Test_Level_01",
+  "Description": "",
+  "Models": [
+    { 
+        "FileName": "teapot.obj"
+    }, { 
+        "FileName": "cube-test.obj" 
+    }, {
+        "FileName": "N/A"
+    }],
+    "Extra": ""
+}

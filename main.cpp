@@ -16,6 +16,7 @@
 #include "common/objloader.hpp"
 #include "common/shader.hpp"
 #include "common/camera.hpp"
+#include "common/lvlloader.hpp"
 
 const int Width = 640;
 const int Height = 480;
@@ -50,6 +51,9 @@ GLFWwindow* initialize(){
 
     // Set GLFW to throw errors
     glfwSetErrorCallback(errorCallback);
+
+    // Set anti alaising
+    glfwWindowHint(GLFW_SAMPLES, 4);
 
     // Set GLFW to use OpenGL 3.3
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -89,6 +93,12 @@ int main() {
 
     // Load OBJ file
     ObjLoader objLoader("../teapot.obj");
+
+    // Load level file
+    LvlLoader lvlLoader("../Level_01.json");
+
+    std::string level_name = lvlLoader.getName();
+    std::cerr << "Loading Level: " << level_name << std::endl;
 
     // Create Vertex Array Object (VAO)
     GLuint vao;
@@ -256,7 +266,7 @@ int main() {
     glDeleteVertexArrays(1, &vao);
     glDeleteBuffers(1, &vbo);
     glDeleteBuffers(1, &ebo);
-
+ 
     // Close GLFW
     glfwTerminate();
 
