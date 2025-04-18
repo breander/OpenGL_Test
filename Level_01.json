@@ -3,9 +3,13 @@
   "Description": "",
   "Models": [
     { 
-        "FileName": "teapot.obj"
+        "FileName": "teapot.obj",
+        "LocationX": 100.0,
+        "LocationY": 100.0
     }, { 
-        "FileName": "cube-test.obj" 
+        "FileName": "cube-test.obj" ,
+        "LocationX": -100.0,
+        "LocationY": -100.0
     }, {
         "FileName": "N/A"
     }],

@@ -7,7 +7,7 @@ public:
     const std::string& getName() const;
 private:
     std::vector<GLuint> objects;
-    std::string name;
+    std::string _name;
 
     void loadLevel(const std::string& filePath);
 };

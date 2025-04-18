@@ -17,7 +17,7 @@ LvlLoader::LvlLoader(const std::string& filePath) {
 }
 
 const std::string& LvlLoader::getName() const {
-    return name;
+    return _name;
 };
 
 void LvlLoader::loadLevel(const std::string& filePath) {
@@ -45,7 +45,9 @@ void LvlLoader::loadLevel(const std::string& filePath) {
         return;
     }
 
-    rapidjson::Value& s = doc["Name"];
+    rapidjson::Value& jName = doc["Name"];
+    rapidjson::Value& jModels = doc["Models"];
     
-    name = s.GetString();
+    _name = jName.GetString();
+    rapidjson::Value& models = jModels.GetArray();
 }
