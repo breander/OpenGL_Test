@@ -10,9 +10,6 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/transform.hpp>
 
-#include "common/vertex.hpp"
-#include "common/normal.hpp"
-#include "common/face.hpp"
 #include "common/object.hpp"
 #include "common/shader.hpp"
 #include "common/camera.hpp"
@@ -75,13 +72,9 @@ int main() {
         return -1;
     }
 
-    // Load OBJ file
-    //ObjLoader objLoader("../teapot.obj");
-
     // Load level file
     LvlLoader lvlLoader("../Level_01.json");
-    std::string level_name = lvlLoader.getName();
-    std::cerr << "Loaded Level: " << level_name << std::endl;
+    std::cerr << "Loaded Level: " << lvlLoader.getName() << std::endl;
 
     // Set up rotation angle
     float angle = 0.0f;
@@ -92,8 +85,6 @@ int main() {
 
     // Camera parameters
     Camera camera = Camera();
-
-    glm::vec3 modelPosition = glm::vec3(0.0f, 0.0f, 0.0f);
 
     // Create and compile our GLSL program from the shaders
 	GLuint programID = LoadShaders( "../SimpleVertexShader.glsl", "../SimpleFragmentShader.glsl" );
@@ -109,7 +100,7 @@ int main() {
     glm::vec3 light_color = glm::vec3(1.0f, 1.0f, 1.0f);
 
     // Set object color as uniform
-    glm::vec3 objectColor = glm::vec3(1.0f, 0.5f, 0.0f);
+    glm::vec3 objectColor = glm::vec3(1.0f, 0.5f, 0.5f);
     glm::float32 intensity = 1.5f;
 
     // Render loop
