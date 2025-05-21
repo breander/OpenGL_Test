@@ -17,12 +17,15 @@ find_package(glm REQUIRED)
 add_executable(OpenGL_Test 
     main.cpp
     
+    common/lvlloader.cpp
+    common/lvlloader.hpp
+
     common/objloader.cpp
     common/objloader.hpp
 
-    common/lvlloader.cpp
-    common/lvlloader.hpp
-    
+    common/object.cpp
+    common/object.hpp
+
     common/face.hpp
     common/normal.hpp
     common/vertex.hpp

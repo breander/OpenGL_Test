@@ -13,29 +13,13 @@
 #include "common/vertex.hpp"
 #include "common/normal.hpp"
 #include "common/face.hpp"
-#include "common/objloader.hpp"
+#include "common/object.hpp"
 #include "common/shader.hpp"
 #include "common/camera.hpp"
 #include "common/lvlloader.hpp"
 
 const int Width = 640;
 const int Height = 480;
-
-GLuint createVertexBuffer(const std::vector<Vertex>& vertices) {
-    GLuint vbo;
-    glGenBuffers(1, &vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
-    return vbo;
-}
-
-GLuint createElementBuffer(const std::vector<Face>& faces) {
-    GLuint ebo;
-    glGenBuffers(1, &ebo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, faces.size() * sizeof(Face), faces.data(), GL_STATIC_DRAW);
-    return ebo;
-}
 
 void errorCallback(int error, const char* description) {
     std::cerr << "Error: " << description << std::endl;
@@ -92,36 +76,12 @@ int main() {
     }
 
     // Load OBJ file
-    ObjLoader objLoader("../teapot.obj");
+    //ObjLoader objLoader("../teapot.obj");
 
     // Load level file
     LvlLoader lvlLoader("../Level_01.json");
-
     std::string level_name = lvlLoader.getName();
-    std::cerr << "Loading Level: " << level_name << std::endl;
-
-    // Create Vertex Array Object (VAO)
-    GLuint vao;
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
-
-    // Create Vertex Buffer Object (VBO)
-    GLuint vbo = createVertexBuffer(objLoader.getVertices());
-
-    // Create Element Buffer Object (EBO)
-    GLuint ebo = createElementBuffer(objLoader.getFaces());
-
-    // Specify the layout of the vertex data
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    // Specify the layout of the normal data
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-
-    // Unbind VAO, VBO, and EBO
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
+    std::cerr << "Loaded Level: " << level_name << std::endl;
 
     // Set up rotation angle
     float angle = 0.0f;
@@ -133,7 +93,7 @@ int main() {
     // Camera parameters
     Camera camera = Camera();
 
-    //glm::vec3 modelPosition = glm::vec3(0.0f, 0.0f, 0.0f);
+    glm::vec3 modelPosition = glm::vec3(0.0f, 0.0f, 0.0f);
 
     // Create and compile our GLSL program from the shaders
 	GLuint programID = LoadShaders( "../SimpleVertexShader.glsl", "../SimpleFragmentShader.glsl" );
@@ -159,15 +119,6 @@ int main() {
 
         // Use the shader program
         glUseProgram(programID);
-
-        // Bind the VAO
-        glBindVertexArray(vao);
-
-        // Rotate the object
-        angle += 0.001f;
-        if (angle > 360.0f) {
-            angle -= 360.0f;
-        }
 
         movement -= 0.001f;
 
@@ -226,17 +177,7 @@ int main() {
         // Update view matrix
         view = camera.getLookAt();
 
-        glm::vec3 myRotationAxis( 0.0f, 1.0f, 0.0f);
-        glm::mat4 rotationMatrix = glm::rotate( angle, myRotationAxis );
-        glm::vec3 translation(0.0f, -1.0f, -1.0f + movement);
-        glm::mat4 translationMatrix = glm::translate(translation);
-        glm::vec3 scale(2.0f, 2.0f, 2.0f);
-        glm::mat4 scaleMatrix = glm::scale(scale);
-
-        // Set the transformation matrix
-        GLint modelLoc = glGetUniformLocation(programID, "model");
-        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(translationMatrix * rotationMatrix * scaleMatrix));
-
+        
         // Set the view and projection matrices as uniforms in your shader program
         GLint viewLoc = glGetUniformLocation(programID, "view");
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
@@ -252,8 +193,33 @@ int main() {
         glUniform3fv(glGetUniformLocation(programID, "objectColor"), 1, glm::value_ptr(objectColor));
         glUniform1f(glGetUniformLocation(programID, "intensity"), intensity);
 
-        // Draw the object
-        glDrawElements(GL_TRIANGLES, objLoader.getFaces().size() * 3, GL_UNSIGNED_INT, 0);
+        // for each object in the level
+        for (Object object : lvlLoader.getObjects()) {
+            // Bind the VAO
+            glBindVertexArray(object.vao);
+
+            // Rotate the object
+            angle += 0.001f;
+            if (angle > 360.0f) {
+                angle -= 360.0f;
+            }
+
+            glm::vec3 myRotationAxis( 0.0f, 1.0f, 0.0f);
+            glm::mat4 rotationMatrix = glm::rotate( angle, myRotationAxis );
+            glm::vec3 translation(object.locationX, object.locationY, object.locationZ + movement);
+            glm::mat4 translationMatrix = glm::translate(translation);
+            glm::vec3 scale(2.0f, 2.0f, 2.0f);
+            glm::mat4 scaleMatrix = glm::scale(scale);
+
+            // Set the transformation matrix
+            GLint modelLoc = glGetUniformLocation(programID, "model");
+            glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(translationMatrix * rotationMatrix * scaleMatrix));
+
+            ObjLoader objLoader = object.objLoader;
+
+            // Draw the object
+            glDrawElements(GL_TRIANGLES, objLoader.getFaces().size() * 3, GL_UNSIGNED_INT, 0);
+        }
 
         // Swap front and back buffers
         glfwSwapBuffers(window);
@@ -263,9 +229,7 @@ int main() {
     }
 
     // Clean up
-    glDeleteVertexArrays(1, &vao);
-    glDeleteBuffers(1, &vbo);
-    glDeleteBuffers(1, &ebo);
+    lvlLoader.destroyObjects();
  
     // Close GLFW
     glfwTerminate();

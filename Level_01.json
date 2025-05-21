@@ -3,15 +3,17 @@
   "Description": "",
   "Models": [
     { 
-        "FileName": "teapot.obj",
-        "LocationX": 100.0,
-        "LocationY": 100.0
+        "FileName": "../teapot.obj",
+        "LocationX": 0.0,
+        "LocationY": -1.0,
+        "LocationZ": -1.0,
+        "LoadObject": true
     }, { 
-        "FileName": "cube-test.obj" ,
+        "FileName": "../cube-test.obj" ,
         "LocationX": -100.0,
-        "LocationY": -100.0
-    }, {
-        "FileName": "N/A"
+        "LocationY": -100.0,
+        "LocationZ": -100.0,
+        "LoadObject": false
     }],
     "Extra": ""
 }

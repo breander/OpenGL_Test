@@ -1,3 +1,8 @@
+#include <vector>
+#include "vertex.hpp"
+#include "normal.hpp"
+#include "face.hpp"
+
 #ifndef OBJLOADER_HPP
 #define OBJLOADER_HPP
 
