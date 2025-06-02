@@ -5,7 +5,19 @@
     {
         "Position": [0.0, 3.0, 2.0],
         "Color": [1.0, 1.0, 1.0],
-        "Intensity": 1.0
+        "Intensity": 0.1
+    },{
+        "Position": [0.0, 3.0, -2.0],
+        "Color": [1.0, 1.0, 1.0],
+        "Intensity": 0.1
+    }, {
+        "Position": [5.0, 3.0, 2.0],
+        "Color": [1.0, 1.0, 1.0],
+        "Intensity": 0.1
+    }, {
+        "Position": [-5.0, 3.0, -2.0],
+        "Color": [1.0, 1.0, 1.0],
+        "Intensity": 0.1
     }
   ],
   "Models": [

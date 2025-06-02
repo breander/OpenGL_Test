@@ -20,14 +20,15 @@ uniform vec3 objectColor;
 void main() {
     vec3 norm = normalize(Normal);
     //vec3 diffuse = vec3(0.0);
-    //vec3 result = vec3(0.0);
+    vec3 result = vec3(0.0);
 
     for (int i = 0; i < numLights; ++i) {
         vec3 lightDir = normalize(lights[i].position - FragPos);
         float diff = max(dot(norm, lightDir), 0.0);
         vec3 diffuse = diff * lights[i].color;
         vec3 ambient = lights[i].intensity * objectColor;
-        vec3 result = (ambient + diffuse) * objectColor;
-        FragColor += vec4(result, 1.0);
+        result += (ambient + diffuse) * objectColor;
     }
+
+    FragColor = vec4(result, 1.0);
 }
