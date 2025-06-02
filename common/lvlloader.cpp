@@ -15,6 +15,7 @@
 #include "face.hpp"
 #include "object.hpp"
 
+#include "shader.hpp"
 #include "lvlloader.hpp"
 
 LvlLoader::LvlLoader(const std::string& filePath) {
@@ -79,10 +80,17 @@ void LvlLoader::loadLevel(const std::string& filePath) {
     for (rapidjson::SizeType i = 0; i < models.Size(); i++) {
         rapidjson::Value& model = models[i];
         std::string fileName = model["FileName"].GetString();
+        std::string fragmentShader = model["FragmentShader"].GetString();
+        std::string vertexShader = model["VertexShader"].GetString();
         float x = model["LocationX"].GetFloat();
         float y = model["LocationY"].GetFloat();
         float z = model["LocationZ"].GetFloat();
         bool load = model["LoadObject"].GetBool();
+        glm::vec3 color = glm::vec3(
+            model["Color"][0].GetFloat(),
+            model["Color"][1].GetFloat(),
+            model["Color"][2].GetFloat()
+        );
 
         if (!load) {
             std::cerr << "Skipped Model: " << fileName << " x: " << x << " y: " << y << std::endl;
@@ -122,6 +130,23 @@ void LvlLoader::loadLevel(const std::string& filePath) {
         // Unbind VAO, VBO, and EBO
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
+
+        // load the shaders
+        object.fragmentShader = fragmentShader;
+        object.vertexShader = vertexShader;
+
+        // Create and compile our GLSL program from the shaders
+	    object.programID = LoadShaders(vertexShader.c_str(), fragmentShader.c_str());
+        if (object.programID == 0) {
+            std::cerr << "Error loading shaders for model: " << fileName << std::endl;
+            continue;
+        }
+
+        std::cerr << "Loaded shader programId: " << object.programID 
+                  << " for model: " << fileName << std::endl;
+
+        // Set the color
+        object.color = color;
 
         // Store the VAO in the objects vector
         _objects.push_back(object);

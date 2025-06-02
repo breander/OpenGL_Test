@@ -11,7 +11,7 @@
 #include <glm/gtx/transform.hpp>
 
 #include "common/object.hpp"
-#include "common/shader.hpp"
+//#include "common/shader.hpp"
 #include "common/camera.hpp"
 #include "common/lvlloader.hpp"
 
@@ -86,9 +86,6 @@ int main() {
     // Camera parameters
     Camera camera = Camera();
 
-    // Create and compile our GLSL program from the shaders
-	GLuint programID = LoadShaders( "../SimpleVertexShader.glsl", "../SimpleFragmentShader.glsl" );
-
     // Projection matrix
     glm::mat4 projection = glm::perspective(glm::radians(60.0f), (float)Width / (float)Height, 0.1f, 100.0f);
 
@@ -100,18 +97,13 @@ int main() {
     glm::vec3 light_color = glm::vec3(1.0f, 1.0f, 1.0f);
 
     // Set object color as uniform
-    glm::vec3 objectColor = glm::vec3(1.0f, 0.5f, 0.5f);
+    //glm::vec3 objectColor = glm::vec3(1.0f, 0.5f, 0.5f);
     glm::float32 intensity = 1.5f;
 
     // Render loop
     while (!glfwWindowShouldClose(window)) {
         // Clear the buffer
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        // Use the shader program
-        glUseProgram(programID);
-
-        movement -= 0.001f;
 
         // Process input
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
@@ -168,42 +160,38 @@ int main() {
         // Update view matrix
         view = camera.getLookAt();
 
-        
-        // Set the view and projection matrices as uniforms in your shader program
-        GLint viewLoc = glGetUniformLocation(programID, "view");
-        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-
-        GLint projectionLoc = glGetUniformLocation(programID, "projection");
-        glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
-
-        // Set light properties as uniforms
-        glUniform3fv(glGetUniformLocation(programID, "light.position"), 1, glm::value_ptr(light_position));
-        glUniform3fv(glGetUniformLocation(programID, "light.color"), 1, glm::value_ptr(light_color));
-
-        // Set object color as uniform
-        glUniform3fv(glGetUniformLocation(programID, "objectColor"), 1, glm::value_ptr(objectColor));
-        glUniform1f(glGetUniformLocation(programID, "intensity"), intensity);
-
         // for each object in the level
         for (Object object : lvlLoader.getObjects()) {
+            // Use the shader program
+            glUseProgram(object.programID);
+
+            // Set the view and projection matrices as uniforms in your shader program
+            GLint viewLoc = glGetUniformLocation(object.programID, "view");
+            glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+
+            GLint projectionLoc = glGetUniformLocation(object.programID, "projection");
+            glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+
+            // Set light properties as uniforms
+            glUniform3fv(glGetUniformLocation(object.programID, "light.position"), 1, glm::value_ptr(light_position));
+            glUniform3fv(glGetUniformLocation(object.programID, "light.color"), 1, glm::value_ptr(light_color));
+
+            // Set object color as uniform
+            glUniform3fv(glGetUniformLocation(object.programID, "objectColor"), 1, glm::value_ptr(object.color));
+            glUniform1f(glGetUniformLocation(object.programID, "intensity"), intensity);
+
             // Bind the VAO
             glBindVertexArray(object.vao);
-
-            // Rotate the object
-            angle += 0.001f;
-            if (angle > 360.0f) {
-                angle -= 360.0f;
-            }
 
             glm::vec3 myRotationAxis( 0.0f, 1.0f, 0.0f);
             glm::mat4 rotationMatrix = glm::rotate( angle, myRotationAxis );
             glm::vec3 translation(object.locationX, object.locationY, object.locationZ + movement);
             glm::mat4 translationMatrix = glm::translate(translation);
-            glm::vec3 scale(2.0f, 2.0f, 2.0f);
+            glm::vec3 scale(1.0f, 1.0f, 1.0f);
             glm::mat4 scaleMatrix = glm::scale(scale);
 
             // Set the transformation matrix
-            GLint modelLoc = glGetUniformLocation(programID, "model");
+            GLint modelLoc = glGetUniformLocation(object.programID, "model");
             glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(translationMatrix * rotationMatrix * scaleMatrix));
 
             ObjLoader objLoader = object.objLoader;

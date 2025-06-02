@@ -4,16 +4,22 @@
   "Models": [
     { 
         "FileName": "../teapot.obj",
+        "FragmentShader": "../SimpleFragmentShader.glsl",
+        "VertexShader": "../SimpleVertexShader.glsl",
         "LocationX": 0.0,
         "LocationY": -1.0,
         "LocationZ": -1.0,
+        "Color": [1.0, 0.5, 0.5],
         "LoadObject": true
     }, { 
-        "FileName": "../cube-test.obj" ,
-        "LocationX": -100.0,
-        "LocationY": -100.0,
-        "LocationZ": -100.0,
-        "LoadObject": false
+        "FileName": "../teapot.obj" ,
+        "FragmentShader": "../SimpleFragmentShader.glsl",
+        "VertexShader": "../SimpleVertexShader.glsl",
+        "LocationX": -5.0,
+        "LocationY": -1.0,
+        "LocationZ": -1.0,
+        "Color": [0.5, 0.5, 1.0],
+        "LoadObject": true
     }],
     "Extra": ""
 }
