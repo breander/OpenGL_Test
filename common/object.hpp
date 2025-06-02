@@ -16,6 +16,7 @@ public:
     float locationX;
     float locationY;
     float locationZ;
+    float angle;
     glm::vec3 color;
     ObjLoader objLoader;
 private:

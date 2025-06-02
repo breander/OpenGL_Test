@@ -11,9 +11,11 @@
 #include <glm/gtx/transform.hpp>
 
 #include "common/object.hpp"
-//#include "common/shader.hpp"
+#include "common/light.hpp"
 #include "common/camera.hpp"
+
 #include "common/lvlloader.hpp"
+
 
 const int Width = 640;
 const int Height = 480;
@@ -76,10 +78,6 @@ int main() {
     LvlLoader lvlLoader("../Level_01.json");
     std::cerr << "Loaded Level: " << lvlLoader.getName() << std::endl;
 
-    // Set up rotation angle
-    float angle = 0.0f;
-    float movement = 0.0f;
-
     // Enable depth testing
     glEnable(GL_DEPTH_TEST);
 
@@ -93,12 +91,11 @@ int main() {
     glm::mat4 view = camera.getLookAt();
 
     // Set light properties as uniforms
-    glm::vec3 light_position = glm::vec3(0.0f, 3.0f, 2.0f);
-    glm::vec3 light_color = glm::vec3(1.0f, 1.0f, 1.0f);
+    //glm::vec3 light_position = glm::vec3(0.0f, 3.0f, 2.0f);
+    //glm::vec3 light_color = glm::vec3(1.0f, 1.0f, 1.0f);
 
-    // Set object color as uniform
-    //glm::vec3 objectColor = glm::vec3(1.0f, 0.5f, 0.5f);
-    glm::float32 intensity = 1.5f;
+    // Set light intensity
+    //glm::float32 intensity = 1.0f;
 
     // Render loop
     while (!glfwWindowShouldClose(window)) {
@@ -131,7 +128,7 @@ int main() {
             camera.rotateRight();
         }
 
-        if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS){
+        /* if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS){
             light_position.x -= camera.getSpeed();
         }
         if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS){
@@ -155,7 +152,7 @@ int main() {
         }
         if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS){
             intensity += camera.getSpeed();
-        }
+        } */
 
         // Update view matrix
         view = camera.getLookAt();
@@ -172,20 +169,28 @@ int main() {
             GLint projectionLoc = glGetUniformLocation(object.programID, "projection");
             glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
-            // Set light properties as uniforms
-            glUniform3fv(glGetUniformLocation(object.programID, "light.position"), 1, glm::value_ptr(light_position));
-            glUniform3fv(glGetUniformLocation(object.programID, "light.color"), 1, glm::value_ptr(light_color));
-
-            // Set object color as uniform
+            int lightCount = 0;
+            int numLights = lvlLoader.getLights().size();
+            glUniform1i(glGetUniformLocation(object.programID, "numLights"), numLights);
             glUniform3fv(glGetUniformLocation(object.programID, "objectColor"), 1, glm::value_ptr(object.color));
-            glUniform1f(glGetUniformLocation(object.programID, "intensity"), intensity);
+
+            for (Light light : lvlLoader.getLights()){
+                // Set light properties as uniforms
+                std::string base = "lights[" + std::to_string(lightCount) + "]";
+                glUniform3fv(glGetUniformLocation(object.programID, (base + ".position").c_str()), 1, glm::value_ptr(light.position));
+                glUniform3fv(glGetUniformLocation(object.programID, (base + ".color").c_str()), 1, glm::value_ptr(light.color));
+
+                // Set object color as uniform
+                glUniform1f(glGetUniformLocation(object.programID, (base + ".intensity").c_str()), light.intensity);
+                lightCount++;
+            }
 
             // Bind the VAO
             glBindVertexArray(object.vao);
 
             glm::vec3 myRotationAxis( 0.0f, 1.0f, 0.0f);
-            glm::mat4 rotationMatrix = glm::rotate( angle, myRotationAxis );
-            glm::vec3 translation(object.locationX, object.locationY, object.locationZ + movement);
+            glm::mat4 rotationMatrix = glm::rotate( object.angle, myRotationAxis );
+            glm::vec3 translation(object.locationX, object.locationY, object.locationZ);
             glm::mat4 translationMatrix = glm::translate(translation);
             glm::vec3 scale(1.0f, 1.0f, 1.0f);
             glm::mat4 scaleMatrix = glm::scale(scale);

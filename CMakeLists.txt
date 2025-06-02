@@ -30,6 +30,9 @@ add_executable(OpenGL_Test
     common/normal.hpp
     common/vertex.hpp
 
+    common/light.cpp
+    common/light.hpp
+
     common/camera.cpp
     common/camera.hpp
     

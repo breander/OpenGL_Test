@@ -14,7 +14,7 @@
 #include "normal.hpp"
 #include "face.hpp"
 #include "object.hpp"
-
+#include "light.hpp"
 #include "shader.hpp"
 #include "lvlloader.hpp"
 
@@ -28,6 +28,10 @@ const std::string& LvlLoader::getName() const {
 
 const std::vector<Object>& LvlLoader::getObjects() const {
     return _objects;
+}
+
+const std::vector<Light>& LvlLoader::getLights() const {
+    return _lights;
 }
 
 GLuint LvlLoader::createVertexBuffer(const std::vector<Vertex>& vertices) {
@@ -73,6 +77,27 @@ void LvlLoader::loadLevel(const std::string& filePath) {
 
     rapidjson::Value& jName = doc["Name"];
     rapidjson::Value& jModels = doc["Models"];
+    rapidjson::Value& lights = doc["Lights"];
+
+    for (rapidjson::SizeType i = 0; i < lights.Size(); i++) {
+        rapidjson::Value& light = lights[i];
+        glm::vec3 position = glm::vec3(
+            light["Position"][0].GetFloat(),
+            light["Position"][1].GetFloat(),
+            light["Position"][2].GetFloat()
+        );
+        glm::vec3 color = glm::vec3(
+            light["Color"][0].GetFloat(),
+            light["Color"][1].GetFloat(),
+            light["Color"][2].GetFloat()
+        );
+        float intensity = light["Intensity"].GetFloat();
+        Light theLight = Light();
+        theLight.position = position;
+        theLight.color = color;
+        theLight.intensity = intensity;
+        _lights.push_back(theLight);
+    }
     
     _name = jName.GetString();
     rapidjson::Value& models = jModels.GetArray();
@@ -85,6 +110,7 @@ void LvlLoader::loadLevel(const std::string& filePath) {
         float x = model["LocationX"].GetFloat();
         float y = model["LocationY"].GetFloat();
         float z = model["LocationZ"].GetFloat();
+        float angle = model["Angle"].GetFloat();
         bool load = model["LoadObject"].GetBool();
         glm::vec3 color = glm::vec3(
             model["Color"][0].GetFloat(),
@@ -110,6 +136,7 @@ void LvlLoader::loadLevel(const std::string& filePath) {
         object.locationX = x;
         object.locationY = y;
         object.locationZ = z;
+        object.angle = angle;
 
         // Create Vertex Buffer Object (VBO)
         GLuint vbo = createVertexBuffer(object.objLoader.getVertices());
