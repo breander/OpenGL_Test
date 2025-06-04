@@ -32,7 +32,7 @@
         "Color": [1.0, 0.5, 0.5],
         "LoadObject": true
     }, { 
-        "FileName": "../teapot.obj" ,
+        "FileName": "../cube-test.obj" ,
         "FragmentShader": "../SimpleFragmentShader.glsl",
         "VertexShader": "../SimpleVertexShader.glsl",
         "LocationX": -5.0,

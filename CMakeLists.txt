@@ -16,6 +16,23 @@ find_package(glm REQUIRED)
 # Add executable
 add_executable(OpenGL_Test 
     main.cpp
+
+    imgui.cpp
+    imgui.h
+    imgui_demo.cpp
+    imgui_draw.cpp
+    imgui_tables.cpp
+    imgui_widgets.cpp
+    imconfig.h
+    imgui_impl_glfw.cpp
+    imgui_impl_glfw.h
+    imgui_impl_opengl3.cpp
+    imgui_impl_opengl3.h
+    imgui_internal.h
+    imgui_impl_opengl3_loader.h
+    imstb_rectpack.h
+    imstb_textedit.h
+    imstb_truetype.h
     
     common/lvlloader.cpp
     common/lvlloader.hpp
