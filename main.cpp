@@ -21,8 +21,8 @@
 #include "common/lvlloader.hpp"
 
 
-const int Width = 640;
-const int Height = 480;
+const int Width = 1280;
+const int Height = 720;
 
 void errorCallback(int error, const char* description) {
     std::cerr << "Error: " << description << std::endl;
