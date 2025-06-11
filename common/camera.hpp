@@ -21,6 +21,8 @@ public:
     void moveDown();
     void rotateLeft();
     void rotateRight();
+
+    void setYawPitch(float yaw, float pitch);
 private:
     glm::vec3 _position;
     glm::vec3 _up;

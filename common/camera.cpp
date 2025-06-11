@@ -68,3 +68,11 @@ void Camera::rotateLeft(){
 void Camera::rotateRight(){
     _front += glm::normalize(glm::cross(_front, _up)) * _speed;
 }
+
+void Camera::setYawPitch(float yaw, float pitch) {
+    glm::vec3 front;
+    front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+    front.y = sin(glm::radians(pitch));
+    front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+    _front = glm::normalize(front);
+}

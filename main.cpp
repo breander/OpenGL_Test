@@ -24,8 +24,45 @@
 const int Width = 1280;
 const int Height = 720;
 
+// Camera parameters
+Camera camera = Camera();
+
+float lastX = Width / 2.0f;
+float lastY = Height / 2.0f;
+bool firstMouse = true;
+
 void errorCallback(int error, const char* description) {
     std::cerr << "Error: " << description << std::endl;
+}
+
+void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
+    static float yaw = -90.0f;
+    static float pitch = 0.0f;
+    static float sensitivity = 0.1f;
+
+    if (firstMouse) {
+        lastX = xpos;
+        lastY = ypos;
+        firstMouse = false;
+    }
+
+    float xoffset = xpos - lastX;
+    float yoffset = lastY - ypos; // reversed: y ranges bottom to top
+    lastX = xpos;
+    lastY = ypos;
+
+    xoffset *= sensitivity;
+    yoffset *= sensitivity;
+
+    yaw += xoffset;
+    pitch += yoffset;
+
+    // Constrain pitch
+    if (pitch > 89.0f) pitch = 89.0f;
+    if (pitch < -89.0f) pitch = -89.0f;
+
+    // Update camera direction
+    camera.setYawPitch(yaw, pitch);
 }
 
 GLFWwindow* initialize(){
@@ -78,6 +115,11 @@ int main() {
         return -1;
     }
 
+    // Register mouse callback
+    glfwSetCursorPosCallback(window, mouse_callback);
+    // Optionally, hide and capture the cursor
+    //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
     const char* glsl_version = "#version 330";
 
     // Setup Dear ImGui context
@@ -106,9 +148,6 @@ int main() {
 
     // Enable depth testing
     glEnable(GL_DEPTH_TEST);
-
-    // Camera parameters
-    Camera camera = Camera();
 
     // Projection matrix
     glm::mat4 projection = glm::perspective(glm::radians(60.0f), (float)Width / (float)Height, 0.1f, 100.0f);
