@@ -15,11 +15,9 @@ in vec3 Normal;
 uniform Light lights[NUM_LIGHTS];
 uniform int numLights;
 uniform vec3 objectColor;
-//uniform float intensity;
 
 void main() {
     vec3 norm = normalize(Normal);
-    //vec3 diffuse = vec3(0.0);
     vec3 result = vec3(0.0);
 
     for (int i = 0; i < numLights; ++i) {
