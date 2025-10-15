@@ -4,7 +4,7 @@
   "Lights": [
     {
         "Position": [0.0, 3.0, 2.0],
-        "Color": [1.0, 1.0, 1.0],
+        "Color": [1.0, 1.0, 0.0],
         "Intensity": 0.1
     },{
         "Position": [0.0, 3.0, -2.0],
@@ -36,6 +36,16 @@
         "FragmentShader": "../SimpleFragmentShader.glsl",
         "VertexShader": "../SimpleVertexShader.glsl",
         "LocationX": -5.0,
+        "LocationY": -1.0,
+        "LocationZ": -1.0,
+        "Angle": 180.0,
+        "Color": [0.5, 0.5, 1.0],
+        "LoadObject": true
+    }, { 
+        "FileName": "../cube-test.obj" ,
+        "FragmentShader": "../SimpleFragmentShader.glsl",
+        "VertexShader": "../SimpleVertexShader.glsl",
+        "LocationX": 5.0,
         "LocationY": -1.0,
         "LocationZ": -1.0,
         "Angle": 180.0,

@@ -1,6 +1,6 @@
-#include "imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_glfw.h"
+#include "imgui/imgui_impl_opengl3.h"
 
 #include <iostream>
 #include <fstream>
@@ -20,7 +20,6 @@
 
 #include "common/lvlloader.hpp"
 
-
 const int Width = 1280;
 const int Height = 720;
 
@@ -31,16 +30,19 @@ float lastX = Width / 2.0f;
 float lastY = Height / 2.0f;
 bool firstMouse = true;
 
-void errorCallback(int error, const char* description) {
+void errorCallback(int error, const char *description)
+{
     std::cerr << "Error: " << description << std::endl;
 }
 
-void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
+void mouse_callback(GLFWwindow *window, double xpos, double ypos)
+{
     static float yaw = -90.0f;
     static float pitch = 0.0f;
     static float sensitivity = 0.1f;
 
-    if (firstMouse) {
+    if (firstMouse)
+    {
         lastX = xpos;
         lastY = ypos;
         firstMouse = false;
@@ -58,19 +60,23 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
     pitch += yoffset;
 
     // Constrain pitch
-    if (pitch > 89.0f) pitch = 89.0f;
-    if (pitch < -89.0f) pitch = -89.0f;
+    if (pitch > 89.0f)
+        pitch = 89.0f;
+    if (pitch < -89.0f)
+        pitch = -89.0f;
 
     // Update camera direction
     camera.setYawPitch(yaw, pitch);
 }
 
-GLFWwindow* initialize(){
+GLFWwindow *initialize()
+{
     // Initialize GLFW
-    if (!glfwInit()) {
+    if (!glfwInit())
+    {
         std::cerr << "Error initializing GLFW" << std::endl;
         return nullptr;
-        //return -1;
+        // return -1;
     }
 
     // Set GLFW to throw errors
@@ -86,52 +92,57 @@ GLFWwindow* initialize(){
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     // Create a windowed mode window and its OpenGL context
-    GLFWwindow* window = glfwCreateWindow(Width, Height, "OpenGL_Test", NULL, NULL);
-    if (!window) {
+    GLFWwindow *window = glfwCreateWindow(Width, Height, "OpenGL_Test", NULL, NULL);
+    if (!window)
+    {
         std::cerr << "Error creating GLFW window" << std::endl;
         glfwTerminate();
         return nullptr;
-        //return -1;
+        // return -1;
     }
 
     // Make the window's context current
     glfwMakeContextCurrent(window);
 
     // Initialize GLEW
-    if (glewInit() != GLEW_OK) {
+    if (glewInit() != GLEW_OK)
+    {
         std::cerr << "Error initializing GLEW" << std::endl;
         return nullptr;
-        //return -1;
+        // return -1;
     }
 
     return window;
 }
 
-int main() {
+int main()
+{
     // Initialize window
-    GLFWwindow* window = initialize();
+    GLFWwindow *window = initialize();
 
-    if(!window){
+    if (!window)
+    {
         return -1;
     }
 
     // Register mouse callback
     glfwSetCursorPosCallback(window, mouse_callback);
     // Optionally, hide and capture the cursor
-    //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    // glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-    const char* glsl_version = "#version 330";
+    const char *glsl_version = "#version 330";
 
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO(); (void)io;
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+    ImGuiIO &io = ImGui::GetIO();
+    (void)io;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;  // Enable Gamepad Controls
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
-    //ImGui::StyleColorsLight();
+    // ImGui::StyleColorsLight();
 
     // Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForOpenGL(window, true);
@@ -156,14 +167,15 @@ int main() {
     glm::mat4 view = camera.getLookAt();
 
     // Set light properties as uniforms
-    //glm::vec3 light_position = glm::vec3(0.0f, 3.0f, 2.0f);
-    //glm::vec3 light_color = glm::vec3(1.0f, 1.0f, 1.0f);
+    // glm::vec3 light_position = glm::vec3(0.0f, 3.0f, 2.0f);
+    // glm::vec3 light_color = glm::vec3(1.0f, 1.0f, 1.0f);
 
     // Set light intensity
-    //glm::float32 intensity = 1.0f;
+    // glm::float32 intensity = 1.0f;
 
     // Render loop
-    while (!glfwWindowShouldClose(window)) {
+    while (!glfwWindowShouldClose(window))
+    {
         // Clear the buffer
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -193,58 +205,72 @@ int main() {
             static float f = 0.0f;
             static int counter = 0;
 
-            ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+            ImGui::Begin("Hello, world!"); // Create a window called "Hello, world!" and append into it.
 
-            ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-            ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
+            ImGui::Text("This is some useful text.");          // Display some text (you can use a format strings too)
+            ImGui::Checkbox("Demo Window", &show_demo_window); // Edit bools storing our window open/close state
             ImGui::Checkbox("Another Window", &show_another_window);
 
-            ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-            ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
+            ImGui::SliderFloat("float", &f, 0.0f, 1.0f);             // Edit 1 float using a slider from 0.0f to 1.0f
+            ImGui::ColorEdit3("clear color", (float *)&clear_color); // Edit 3 floats representing a color
 
-            if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
+            if (ImGui::Button("Button")) // Buttons return true when clicked (most widgets return true when edited/activated)
                 counter++;
             ImGui::SameLine();
             ImGui::Text("counter = %d", counter);
 
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+            // Get current window size
+            ImVec2 windowSize = ImGui::GetWindowSize();
+            ImGui::Text("Window size: %.1f x %.1f", windowSize.x, windowSize.y);
+
+            // Get window position
+            ImVec2 windowPos = ImGui::GetWindowPos();
+            ImGui::Text("Window pos: %.1f, %.1f", windowPos.x, windowPos.y);
             ImGui::End();
         }
 
         // 3. Show another simple window.
         if (show_another_window)
         {
-            ImGui::Begin("Another Window", &show_another_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
+            ImGui::Begin("Another Window", &show_another_window); // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
             ImGui::Text("Hello from another window!");
             if (ImGui::Button("Close Me"))
                 show_another_window = false;
             ImGui::End();
         }
 
-
         // Process input
-        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        {
             camera.moveForward();
         }
-        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        {
             camera.moveBackward();
         }
-        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        {
             camera.moveLeft();
         }
-        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        {
             camera.moveRight();
         }
-        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS){
+        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+        {
             camera.moveUp();
         }
-        if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
+        if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+        {
             camera.moveDown();
         }
-        if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS){
+        if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+        {
             camera.rotateLeft();
         }
-        if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS){
+        if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+        {
             camera.rotateRight();
         }
 
@@ -281,7 +307,8 @@ int main() {
         view = camera.getLookAt();
 
         // for each object in the level
-        for (Object object : lvlLoader.getObjects()) {
+        for (Object object : lvlLoader.getObjects())
+        {
             // Use the shader program
             glUseProgram(object.programID);
 
@@ -297,7 +324,8 @@ int main() {
             glUniform1i(glGetUniformLocation(object.programID, "numLights"), numLights);
             glUniform3fv(glGetUniformLocation(object.programID, "objectColor"), 1, glm::value_ptr(object.color));
 
-            for (Light light : lvlLoader.getLights()){
+            for (Light light : lvlLoader.getLights())
+            {
                 // Set light properties as uniforms
                 std::string base = "lights[" + std::to_string(lightCount) + "]";
                 glUniform3fv(glGetUniformLocation(object.programID, (base + ".position").c_str()), 1, glm::value_ptr(light.position));
@@ -311,8 +339,8 @@ int main() {
             // Bind the VAO
             glBindVertexArray(object.vao);
 
-            glm::vec3 myRotationAxis( 0.0f, 1.0f, 0.0f);
-            glm::mat4 rotationMatrix = glm::rotate( object.angle, myRotationAxis );
+            glm::vec3 myRotationAxis(0.0f, 1.0f, 0.0f);
+            glm::mat4 rotationMatrix = glm::rotate(object.angle, myRotationAxis);
             glm::vec3 translation(object.locationX, object.locationY, object.locationZ);
             glm::mat4 translationMatrix = glm::translate(translation);
             glm::vec3 scale(1.0f, 1.0f, 1.0f);
@@ -334,7 +362,7 @@ int main() {
         glfwSwapBuffers(window);
 
         // Poll for and process events
-        //glfwPollEvents();
+        // glfwPollEvents();
     }
 
     // Clean up
@@ -343,7 +371,7 @@ int main() {
     ImGui::DestroyContext();
 
     lvlLoader.destroyObjects();
- 
+
     // Close GLFW
     glfwTerminate();
 
