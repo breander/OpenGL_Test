@@ -26,11 +26,11 @@ const std::string& LvlLoader::getName() const {
     return _name;
 }
 
-const std::vector<Object>& LvlLoader::getObjects() const {
+std::vector<Object>& LvlLoader::getObjects() {
     return _objects;
 }
 
-const std::vector<Light>& LvlLoader::getLights() const {
+std::vector<Light>& LvlLoader::getLights() {
     return _lights;
 }
 

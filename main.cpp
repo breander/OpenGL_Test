@@ -66,7 +66,7 @@ void mouse_callback(GLFWwindow *window, double xpos, double ypos)
         pitch = -89.0f;
 
     // Update camera direction
-    camera.setYawPitch(yaw, pitch);
+    //camera.setYawPitch(yaw, pitch);
 }
 
 GLFWwindow *initialize()
@@ -149,7 +149,7 @@ int main()
     ImGui_ImplOpenGL3_Init(glsl_version);
 
     // Imgui variables
-    bool show_demo_window = true;
+    bool show_demo_window = false;
     bool show_another_window = false;
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
@@ -205,29 +205,45 @@ int main()
             static float f = 0.0f;
             static int counter = 0;
 
-            ImGui::Begin("Hello, world!"); // Create a window called "Hello, world!" and append into it.
-
-            ImGui::Text("This is some useful text.");          // Display some text (you can use a format strings too)
-            ImGui::Checkbox("Demo Window", &show_demo_window); // Edit bools storing our window open/close state
-            ImGui::Checkbox("Another Window", &show_another_window);
-
-            ImGui::SliderFloat("float", &f, 0.0f, 1.0f);             // Edit 1 float using a slider from 0.0f to 1.0f
-            ImGui::ColorEdit3("clear color", (float *)&clear_color); // Edit 3 floats representing a color
-
-            if (ImGui::Button("Button")) // Buttons return true when clicked (most widgets return true when edited/activated)
-                counter++;
-            ImGui::SameLine();
-            ImGui::Text("counter = %d", counter);
-
+            ImGui::Begin("Stats"); // Create a window called "Hello, world!" and append into it.
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
-            // Get current window size
-            ImVec2 windowSize = ImGui::GetWindowSize();
-            ImGui::Text("Window size: %.1f x %.1f", windowSize.x, windowSize.y);
-
-            // Get window position
-            ImVec2 windowPos = ImGui::GetWindowPos();
-            ImGui::Text("Window pos: %.1f, %.1f", windowPos.x, windowPos.y);
+            ImGui::Text("Number of Objects: %d", lvlLoader.getObjects().size());
+            ImGui::Text("Number of Lights: %d", lvlLoader.getLights().size());
+            ImGui::Separator();
             ImGui::End();
+
+            for (int count = 0; count < lvlLoader.getObjects().size(); count++)
+            {
+                Object &object = lvlLoader.getObjects()[count];
+                ImGui::Begin(("Object " + std::to_string(count)).c_str());
+                ImGui::Text("Object %d at position: (%.1f, %.1f, %.1f)", count, object.locationX, object.locationY, object.locationZ);
+                ImGui::Text("Object %d at Rotation angle: %.1f radians", count, object.angle);
+                ImGui::Text("Object %d Color: (%.1f, %.1f, %.1f)", count, object.color.r, object.color.g, object.color.b);
+                ImGui::Separator();
+                ImGui::SliderFloat3(("Object Location " + std::to_string(count)).c_str(), &object.locationX, -10.0f, 10.0f, "%.1f", ImGuiSliderFlags_AlwaysClamp);
+                ImGui::SliderFloat(("Object Angle " + std::to_string(count)).c_str(), &object.angle, 0.0f, 6.28f);
+                ImGui::ColorEdit3(("Object Color " + std::to_string(count)).c_str(), (float *)&object.color);
+                ImGui::Separator();
+                ImGui::End();
+            }
+
+            // foreach light in the level
+            for (int count = 0; count < lvlLoader.getLights().size(); count++)
+            {
+                Light &light = lvlLoader.getLights()[count];
+                ImGui::Begin(("Light " + std::to_string(count)).c_str());
+                ImGui::Text("Light %d at position: (%.1f, %.1f, %.1f)", count, light.position.x, light.position.y, light.position.z);
+                ImGui::SliderFloat3(("Light Position " + std::to_string(count)).c_str(), &light.position.x, -10.0f, 10.0f, "%.1f", ImGuiSliderFlags_AlwaysClamp);
+                //ImGui::End();
+                //ImGui::Begin(("Light Color " + std::to_string(count)).c_str());
+                ImGui::Text("Light %d Color: (%.1f, %.1f, %.1f)", count, light.color.r, light.color.g, light.color.b);
+                ImGui::ColorEdit3(("Light Color " + std::to_string(count)).c_str(), (float *)&light.color);
+                //ImGui::End();
+                //ImGui::Begin(("Light Intensity " + std::to_string(count)).c_str());
+                ImGui::Text("Light %d Intensity: %.1f", count, light.intensity);
+                ImGui::SliderFloat(("Light Intensity " + std::to_string(count)).c_str(), &light.intensity, 0.0f, 10.0f);
+                ImGui::End();
+            }
         }
 
         // 3. Show another simple window.
