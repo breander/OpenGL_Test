@@ -169,7 +169,7 @@ Levels are defined in JSON format. Example structure from `Level_01.json`:
 
 ### Shaders
 
-- **Vertex Shader** (`SimpleVertexShader.glsl`): Transforms vertices from model space to clip space and passes fragment position and normals to the fragment shader
+- **Vertex Shader** (`SimpleVertexShader.glsl`): Transforms vertices from model space to clip space and passes world-space positions and normals to the fragment shader
 - **Fragment Shader** (`SimpleFragmentShader.glsl`): Implements multi-light Phong lighting with support for up to 4 lights, calculating ambient and diffuse components
 
 ### Camera System
